@@ -109,8 +109,10 @@ let
       '';
 
   dbAddr =
-    if cfg.database.socket == null then
+    if cfg.database.socket == null && cfg.database.type == "mysql" then
       "${cfg.database.host}:${toString cfg.database.port}"
+    else if cfg.database.socket == null && cfg.database.type == "postgres" then
+      "${cfg.database.host}"
     else if cfg.database.type == "mysql" then
       "${cfg.database.host}:${cfg.database.socket}"
     else if cfg.database.type == "postgres" then
