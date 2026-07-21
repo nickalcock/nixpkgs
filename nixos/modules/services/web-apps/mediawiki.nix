@@ -200,6 +200,9 @@ let
           ## Database settings
           $wgDBtype = "${cfg.database.type}";
           $wgDBname = "${cfg.database.name}";
+          ${lib.optionalString (cfg.database.sharedDb != null) "$wgSharedDb = \"${cfg.database.sharedDb}\";"}
+          ${lib.optionalString (cfg.database.sharedTables != null)
+                "$wgSharedTables = ['" + (builtins.concatStringsSep "' '" (cfg.database.sharedTables)) + " '];"}
           ${dbSettings}
 
           ## Shared memory settings
@@ -505,6 +508,19 @@ in
             Create the database and database user locally.
             This currently only applies if database type "mysql" or "postgres" is selected.
           '';
+        };
+
+        sharedDb = mkOption {
+          default = null;
+          description = ''
+            The name of the shared database, if any.
+          '';
+        };
+
+        sharedTables = mkOption {
+          type = types.listOf types.str;
+          default = null;
+          defaultText = "Tables to share between instances.";
         };
       };
 
@@ -814,6 +830,10 @@ in
                     cfg.database.tablePrefix != null
                   ) "--dbprefix ${lib.escapeShellArg cfg.database.tablePrefix}"
                 } \
+               ${
+                 optionalString (
+                   cfg.database.sharedDb != null
+                ) "--doshared \\"}
                 --dbuser ${lib.escapeShellArg cfg.database.user} \
                 ${
                   optionalString (
