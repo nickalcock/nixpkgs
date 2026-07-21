@@ -159,6 +159,8 @@ let
             exit;
           }
 
+          ${cfg.extraPreConfig}
+
           $wgSitename = "${cfg.name}";
           $wgMetaNamespace = false;
 
@@ -567,6 +569,20 @@ in
         '';
       };
 
+      extraPreConfig = mkOption {
+        type = types.lines;
+        description = ''
+          Any additional text to be prepended to MediaWiki's
+          LocalSettings.php configuration file.
+        '';
+        default = "";
+        example = ''
+          if ( defined( 'MW_DB' ) ) {
+          // Automatically set from --wiki option to maintenance scripts
+          $wgDBname = MW_DB;
+        }
+        '';
+      };
     };
   };
 
