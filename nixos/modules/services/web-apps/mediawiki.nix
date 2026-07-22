@@ -201,8 +201,8 @@ let
           $wgDBtype = "${cfg.database.type}";
           $wgDBname = "${cfg.database.name}";
           ${lib.optionalString (cfg.database.sharedDb != null) "$wgSharedDb = \"${cfg.database.sharedDb}\";"}
-          ${lib.optionalString (cfg.database.sharedTables != null)
-                "$wgSharedTables = ['" + (builtins.concatStringsSep "' '" (cfg.database.sharedTables)) + " '];"}
+          ${lib.optionalString (cfg.database.sharedTables != []) (
+                "$wgSharedTables = ['" + (builtins.concatStringsSep "', '" (cfg.database.sharedTables)) + "'];")}
           ${dbSettings}
 
           ## Shared memory settings
@@ -519,7 +519,7 @@ in
 
         sharedTables = mkOption {
           type = types.listOf types.str;
-          default = null;
+          default = [];
           defaultText = "Tables to share between instances.";
         };
       };
