@@ -550,6 +550,12 @@ in
         '';
       };
 
+      massVirtual = mkOption {
+        type = types.bool;
+        default = false;
+        description = "If true, redirect all paths on all virtual hosts to the wiki.";
+      };
+
       poolConfig = mkOption {
         type =
           with types;
@@ -741,6 +747,9 @@ in
             <Directory "${cfg.uploadsDir}">
               Require all granted
             </Directory>
+          ''
+          + optionalString (cfg.massVirtual) ''
+          AliasMatch "^/.*/([^/?]*)" "${pkg}/share/mediawiki/$1"
           '';
         }
       ];
